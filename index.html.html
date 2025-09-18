@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hellen's Birthday Countdown</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <!-- Swiper CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"
+    />
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Hellen's Birthday Celebration</h1>
+            <div class="sparkles">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+            </div>
+        </header>
+
+        <!-- Audio Birthday Song -->
+        <section class="audio-section">
+            <h2>Birthday Song </h2>
+            <audio id="birthdayAudio" loop>
+                <source src="my assets/birthday-song.mp3.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <button onclick="unmuteAudio()" 
+                style="margin-top:10px; padding:10px 20px; border:none; border-radius:10px; background: var(--accent-color-1); color:#fff; cursor:pointer;">
+                Play Song
+            </button>
+        </section>
+
+        <!-- Prayer Audio Section -->
+<section class="audio-section">
+    <h2>Prayer Tone</h2>
+    <audio id="prayerAudio" loop>
+        <source src="my assets/birthday_prayer.mp3.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <button onclick="playPrayer()" 
+        style="margin-top:10px; padding:10px 20px; border:none; border-radius:10px; background: var(--accent-color-1); color:#fff; cursor:pointer;">
+        Play Prayer
+    </button>
+</section>
+
+
+        <section class="countdown-section">
+            <h2>Countdown to the Big Day</h2>
+            <div id="countdown" class="countdown">
+                <div class="countdown-item">
+                    <span id="days">00</span>
+                    <span class="label">Days</span>
+                </div>
+                <div class="countdown-item">
+                    <span id="hours">00</span>
+                    <span class="label">Hours</span>
+                </div>
+                <div class="countdown-item">
+                    <span id="minutes">00</span>
+                    <span class="label">Minutes</span>
+                </div>
+                <div class="countdown-item">
+                    <span id="seconds">00</span>
+                    <span class="label">Seconds</span>
+                </div>
+            </div>   
+        </section>
+
+        <!-- Swiper Gallery Section -->
+        <section class="gallery-section">
+            <h2>Gallery of Memories</h2>
+
+            <div class="swiper mySwiper">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <img src="my assets/WhatsApp Image 2025-08-21 at 12.15.16 PM.jpeg" alt="Hellen">
+                    </div>
+                    <div class="swiper-slide">
+                        <img src="my assets/WhatsApp Image 2025-08-21 at 12.23.04 PM(1).jpeg" alt="Hellen">
+                    </div>
+                    <div class="swiper-slide">
+                        <img src="my assets/WhatsApp Image 2025-08-21 at 12.23.04 PM.jpeg" alt="Hellen">
+                    </div>
+                    <div class="swiper-slide">
+                        <img src="my assets/WhatsApp Image 2025-08-21 at 12.23.05 PM(1).jpeg" alt="Hellen">
+                    </div>
+                    <div class="swiper-slide">
+                        <img src="my assets/WhatsApp Image 2025-08-21 at 12.23.05 PM.jpeg" alt="Hellen">
+                    </div>
+                </div>
+                <!-- Pagination -->
+                <div class="swiper-pagination"></div>
+            </div>
+        </section>
+
+        <section class="birthday-quotes">
+    <h2> Birthday Quote of the Moment</h2>
+    <p id="birthdayQuote" style="font-style: italic; font-size: 18px; color: #ff69b4; text-align:center;"></p>
+</section>
+
+
+        <section class="birthday-message">
+            <h2>Happy Birthday Wishes</h2>
+            <div class="message-box">
+                <p>Dear Hellen,</p>
+                <p>Wishing you a spectacular birthday filled with joy, laughter, and unforgettable moments!</p>
+                <p>May this new year of your life bring you all the happiness and success you deserve.</p>
+                <div class="signature">With love and best wishes ❤️</div>
+            </div>
+        </section>
+
+        <!-- Wish Submission Section -->
+        <section class="wish-section">
+            <h2>Leave Your Birthday Wish</h2>
+            <div class="wish-box">
+                <textarea id="wishInput" placeholder="Write your birthday wish here..." rows="4" 
+                    style="width:100%; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.3); 
+                    background: rgba(0,0,0,0.6); color: var(--light-color); resize:none;"></textarea>
+                <button id="submitWish" 
+                    style="margin-top:10px; padding:10px 20px; border:none; border-radius:10px; 
+                    background: var(--accent-color-1); color:#fff; cursor:pointer;">
+                    Submit Wish
+                </button>
+            </div>
+            <div id="wishList" style="margin-top:20px;"></div>
+        </section>
+
+        <footer>
+            <p>Made with ❤️ for Hellen</p>
+        </footer>
+    </div>
+
+    <div class="confetti-container"></div>
+
+   <script type="module">
+  // -----------------------------
+  // Firebase imports
+  // -----------------------------
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+  // -----------------------------
+  // Firebase configuration
+  // -----------------------------
+  const firebaseConfig = {
+    apiKey: "AIzaSyBib2n4mTm18OABM20vtSUkBogA6ld_L_Q",
+    authDomain: "birthday-wishes-ddffc.firebaseapp.com",
+    projectId: "birthday-wishes-ddffc",
+    storageBucket: "birthday-wishes-ddffc.firebasestorage.app",
+    messagingSenderId: "393742239803",
+    appId: "1:393742239803:web:28ff50716c31810a59f41e"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // -----------------------------
+  // Firestore: Add new wishes
+  // -----------------------------
+  const wishInput = document.getElementById("wishInput");
+  const submitWish = document.getElementById("submitWish");
+  const wishesList = document.getElementById("wishes");
+
+  submitWish.addEventListener("click", async () => {
+    const wishText = wishInput.value.trim();
+    if (wishText !== "") {
+      try {
+        await addDoc(collection(db, "birthdayWishes"), {
+          text: wishText,
+          timestamp: new Date()
+        });
+        wishInput.value = ""; // clear input after adding
+      } catch (e) {
+        console.error("Error adding wish: ", e);
+      }
+    }
+  });
+
+  // -----------------------------
+  // Firestore: Show wishes live
+  // -----------------------------
+  onSnapshot(collection(db, "birthdayWishes"), (snapshot) => {
+    wishesList.innerHTML = ""; // clear previous
+    snapshot.docs
+      .sort((a, b) => b.data().timestamp - a.data().timestamp) // newest first
+      .forEach(doc => {
+        const li = document.createElement("li");
+        li.textContent = doc.data().text;
+        wishesList.appendChild(li);
+      });
+  });
+
+  // -----------------------------
+  // Swiper initialization
+  // -----------------------------
+  import Swiper from "https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js";
+
+  const Swiper = new Swiper('.mySwiper', {
+    loop: true,
+    autoplay: {
+      delay: 3000,
+      disableOnInteraction: false,
+    },
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true,
+    },
+  });
+
+  // -----------------------------
+  // Audio autoplay
+  // -----------------------------
+  document.addEventListener('DOMContentLoaded', () => {
+    const audio = document.getElementById('birthdayAudio');
+    if(audio){
+      audio.muted = true;
+      audio.loop = true;
+      audio.play().catch(() => {
+        console.log("Autoplay blocked. Click 'Play Song' button to start audio.");
+      });
+    }
+  });
+
+  // Unmute function if you have a play button
+  function unmuteAudio() {
+    const audio = document.getElementById('birthdayAudio');
+    audio.muted = false;
+    audio.play();
+  }
+</script>
+
+
+    <!-- ===== Make a Wish Box (paste here) ===== -->
+  <div id="makeWishWrapper" style="display:none;">
+    <div class="make-wish-container">
+      <h2>Make a Wish </h2>
+      <input type="text" id="wishInput" placeholder="Type your wish for yourself..." />
+      <button id="submitWish">Send Wish</button>
+
+      <div id="wishesList"></div>
+    </div>
+  </div>
+
+
+ <!-- Script files -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+<script src="script.js"></script>
+<script>
+    // Initialize Swiper without arrows
+    const swiper = new Swiper('.mySwiper', {
+    loop: true,
+    autoplay: {
+        delay: 3000,
+        disableOnInteraction: false,
+    },
+    pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+        },
+    });
+
+    // Unmute audio function
+    function unmuteAudio() {
+        const audio = document.getElementById('birthdayAudio');
+        audio.muted = false;
+        audio.play();
+    }
+
+    // Autoplay muted on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const audio = document.getElementById('birthdayAudio');
+        if(audio){
+            audio.muted = true;
+            audio.loop = true;
+            audio.play().catch(() => {
+                console.log("Autoplay blocked. Click 'Play Song' button to start audio.");
+            });
+        }
+    });
+</script>
